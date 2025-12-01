@@ -1,0 +1,6 @@
+.bak/
+build/
+OVMF.fd
+push.sh
+test/
+MOS.img
