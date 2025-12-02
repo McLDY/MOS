@@ -259,16 +259,16 @@ EFI_STATUS boot_kernel(void) {
     EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
     EFI_STATUS status = gST->BootServices->LocateProtocol(&gop_guid, NULL, (VOID**)&gop);
     
-    // 内核参数结构
+    // 内核参数结构（与内核中的framebuffer_info_t匹配）
     typedef struct {
         uint64_t framebuffer_addr;
         uint32_t framebuffer_width;
         uint32_t framebuffer_height;
         uint32_t framebuffer_pitch;
         uint8_t  framebuffer_bpp;
-    } kernel_params_t;
+    } framebuffer_info_t;
     
-    kernel_params_t params;
+    framebuffer_info_t params;
     params.framebuffer_addr = 0;
     params.framebuffer_width = 0;
     params.framebuffer_height = 0;
@@ -508,7 +508,7 @@ EFI_STATUS boot_kernel(void) {
     }
 
     // 调用内核入口点，传递参数
-    void (*kernel_entry)(kernel_params_t*) = (void(*)(kernel_params_t*))gKernelBase;
+    void (*kernel_entry)(void*) = (void(*)(void*))gKernelBase;
     kernel_entry(&params);
     
     // 内核不应该返回，如果返回则说明有问题

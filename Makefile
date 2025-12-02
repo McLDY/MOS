@@ -30,10 +30,12 @@ uefi: $(EFIBUILDDIR)/bootx64.efi
 
 KERNEL_SOURCES = \
 	$(KERNELDIR)/kernel.asm \
-	$(KERNELDIR)/kmain.c
+	$(KERNELDIR)/kmain.c \
+	$(KERNELDIR)/graphics.c
 
 KERNEL_OBJECTS = \
-	$(KERNELBUILDDIR)/kmain.o
+	$(KERNELBUILDDIR)/kmain.o \
+	$(KERNELBUILDDIR)/graphics.o
 
 KERNEL_CFLAGS = -ffreestanding -fno-builtin -fno-stack-protector -mno-red-zone -Wall -Wextra -O2
 
@@ -62,6 +64,10 @@ $(KERNELBUILDDIR)/kernel.o: $(KERNELDIR)/kernel.asm
 	nasm -f elf64 -o $@ $<
 
 $(KERNELBUILDDIR)/kmain.o: $(KERNELDIR)/kmain.c
+	@mkdir -p $(KERNELBUILDDIR)
+	$(CC) $(KERNEL_CFLAGS) -c $< -o $@
+
+$(KERNELBUILDDIR)/graphics.o: $(KERNELDIR)/graphics.c
 	@mkdir -p $(KERNELBUILDDIR)
 	$(CC) $(KERNEL_CFLAGS) -c $< -o $@
 	
