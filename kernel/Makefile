@@ -76,8 +76,9 @@ override CFLAGS += \
     -fno-lto \
     -fno-PIC \
     -ffunction-sections \
-    -fdata-sections\
-    -Iinclude
+    -fdata-sections \
+    -Iinclude \
+    -Wno-unused-function
 
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
@@ -163,9 +164,7 @@ override LDFLAGS += \
     -z max-page-size=0x1000 \
     --gc-sections \
     -T linker-scripts/$(ARCH).lds
-
-CFLAGS += -Iinclude/
-
+    
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree
 # (except the src/arch/* directories, as those are gonna be added
 # in the next step).
@@ -192,23 +191,23 @@ all: bin-$(ARCH)/$(OUTPUT)
 -include $(HEADER_DEPS)
 
 # Link rules for the final executable.
-bin-$(ARCH)/$(OUTPUT): GNUmakefile linker-scripts/$(ARCH).lds $(OBJ)
+bin-$(ARCH)/$(OUTPUT): Makefile linker-scripts/$(ARCH).lds $(OBJ)
 	mkdir -p "$(dir $@)"
 	$(LD) $(LDFLAGS) $(OBJ) -o $@
 
 # Compilation rules for *.c files.
-obj-$(ARCH)/%.c.o: %.c GNUmakefile
+obj-$(ARCH)/%.c.o: %.c Makefile
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # Compilation rules for *.S files.
-obj-$(ARCH)/%.S.o: %.S GNUmakefile
+obj-$(ARCH)/%.S.o: %.S Makefile
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 ifeq ($(ARCH),x86_64)
 # Compilation rules for *.asm (nasm) files.
-obj-$(ARCH)/%.asm.o: %.asm GNUmakefile
+obj-$(ARCH)/%.asm.o: %.asm Makefile
 	mkdir -p "$(dir $@)"
 	nasm $(NASMFLAGS) $< -o $@
 endif

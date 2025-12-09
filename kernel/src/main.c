@@ -5,8 +5,6 @@
 #include "limine.h"
 #include "sb16.h"
 
-// 兼容多版本 limine header 的 request id 选择（优先使用已定义的常量）
-
 volatile struct limine_framebuffer_request framebuffer_request
     __attribute__((section(".limine"), used)) = {
         .id = LIMINE_FRAMEBUFFER_REQUEST_ID,

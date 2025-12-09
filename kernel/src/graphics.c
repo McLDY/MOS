@@ -76,9 +76,9 @@ void put_pixel(uint32_t x, uint32_t y, uint32_t color) {
     if (!g_framebuffer || !fb_addr) return;
     if (x >= fb_width || y >= fb_height) return;
 
-    uint8_t r = (color >> 16) & 0xFF;
+    uint8_t b = (color >> 16) & 0xFF;
     uint8_t g = (color >> 8) & 0xFF;
-    uint8_t b = color & 0xFF;
+    uint8_t r = color & 0xFF;
 
     uint8_t *row = fb_addr + (uint32_t)y * fb_pitch;
     uint8_t *pixel_ptr = row + (uint32_t)x * (fb_bpp / 8);
@@ -89,9 +89,9 @@ void put_pixel(uint32_t x, uint32_t y, uint32_t color) {
 void clear_screen(uint32_t color) {
     if (!g_framebuffer || !fb_addr) return;
 
-    uint8_t r = (color >> 16) & 0xFF;
+    uint8_t b = (color >> 16) & 0xFF;
     uint8_t g = (color >> 8) & 0xFF;
-    uint8_t b = color & 0xFF;
+    uint8_t r = color & 0xFF;
 
     for (uint32_t y = 0; y < fb_height; y++) {
         uint8_t *row = fb_addr + y * fb_pitch;
