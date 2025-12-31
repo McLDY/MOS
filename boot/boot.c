@@ -1,5 +1,27 @@
-#include "efi.h"
-#include "efi_utils.h"
+/*
+                   _ooOoo_
+                  o8888888o
+                  88" . "88
+                  (| -_- |)
+                  O\  =  /O
+               ____/`---'\____
+             .'  \\|     |//  `.
+            /  \\|||  :  |||//  \
+           /  _||||| -:- |||||-  \
+           |   | \\\  -  /// |   |
+           | \_|  ''\---/''  |   |
+           \  .-\__  `-`  ___/-. /
+         ___`. .'  /--.--\  `. . __
+      ."" '<  `.___\_<|>_/___.'  >'"".
+     | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+     \  \ `-.   \_ __\ /__ _/   .-` /  /
+======`-.____`-.___\_____/___.-`____.-'======
+                   `=---='
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            佛祖保佑       永无BUG
+*/
+
+#include "bootloader.h"
 
 // 全局系统表
 EFI_SYSTEM_TABLE *gST = NULL;
@@ -15,7 +37,7 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     gST->ConOut->Reset(gST->ConOut, 0);
     
     // 显示启动信息
-    gST->ConOut->OutputString(gST->ConOut, L"MOS UEFI Bootloader\r\n");
+    gST->ConOut->OutputString(gST->ConOut, L"MWOS UEFI Bootloader\r\n");
     gST->ConOut->OutputString(gST->ConOut, L"=====================\r\n\r\n");
     
     // 加载内核
@@ -25,13 +47,10 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     } else {
         print_string(L"[OK] Load kernel\r\n");
     }
-    
+
     // 退出引导服务并启动内核
     status = boot_kernel();
-    
-    // 不应该到达这里
-    while (1);
 
-
+    // 执行到这里说明内核有问题
     return EFI_SUCCESS;
 }
