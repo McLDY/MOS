@@ -5,13 +5,9 @@
 ## 编译
 ### 你需要准备以下工具：
 `Clang`
-
 `NASM`
-
 `MTools`
-
 `Linker`
-
 `Objcopy`
 
 ### 在项目**根目录**下运行：
