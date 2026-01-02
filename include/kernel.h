@@ -15,5 +15,6 @@
 #include "drivers/pic.h"
 #include "drivers/keyboard.h"
 #include "drivers/ps2_mouse.h"
+#include "pmm.h"
 
-#endif // KERNEL_H
+#endif

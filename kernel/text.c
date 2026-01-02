@@ -26,7 +26,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// 16x8 ASCII 字形表 (字符 32..126)
 static const uint8_t font16x8_basic[95][16] = {
     /* 0x20 ' ' */ {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
                     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},
@@ -220,7 +219,6 @@ static const uint8_t font16x8_basic[95][16] = {
                     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}
 };
 
-// 位反转函数：将字节的位顺序反转
 static inline uint8_t reverse_bits(uint8_t b) {
     b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
     b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -232,23 +230,20 @@ void print_mixed_string(const char *str, uint32_t x, uint32_t y, uint32_t color)
 {
     if (!str || !g_framebuffer)
         return;
-    
+
     uint32_t current_x = x;
     uint32_t current_y = y;
-    
+
     while (*str)
     {
-        // 检查是否为中文（UTF-8编码）
         if ((*str & 0x80) == 0)
         {
-            // ASCII字符
             put_char(*str, current_x, current_y, color);
             current_x += FONT_W + 1;
             str++;
         }
         else if ((*str & 0xE0) == 0xC0 && (str[1] & 0xC0) == 0x80)
         {
-            // 2字节中文字符
             uint16_t unicode = ((*str & 0x1F) << 6) | (str[1] & 0x3F);
             put_chinese_char(unicode, current_x, current_y, color);
             current_x += CHINESE_FONT_W + 1;
@@ -256,9 +251,8 @@ void print_mixed_string(const char *str, uint32_t x, uint32_t y, uint32_t color)
         }
         else if ((*str & 0xF0) == 0xE0 && (str[1] & 0xC0) == 0x80 && (str[2] & 0xC0) == 0x80)
         {
-            // 3字节中文字符
-            uint16_t unicode = ((*str & 0x0F) << 12) | 
-                              ((str[1] & 0x3F) << 6) | 
+            uint16_t unicode = ((*str & 0x0F) << 12) |
+                              ((str[1] & 0x3F) << 6) |
                               (str[2] & 0x3F);
             put_chinese_char(unicode, current_x, current_y, color);
             current_x += CHINESE_FONT_W + 1;
@@ -266,15 +260,14 @@ void print_mixed_string(const char *str, uint32_t x, uint32_t y, uint32_t color)
         }
         else
         {
-            // 无效字符，显示为方框
             for (uint32_t _y = 0; _y < CHINESE_FONT_H; _y++)
             {
                 for (uint32_t _x = 0; _x < CHINESE_FONT_W; _x++)
                 {
                     uint32_t pixel_x = current_x + _x;
                     uint32_t pixel_y = current_y + _y;
-                    
-                    if (_x == 0 || _x == CHINESE_FONT_W - 1 || 
+
+                    if (_x == 0 || _x == CHINESE_FONT_W - 1 ||
                         _y == 0 || _y == CHINESE_FONT_H - 1)
                     {
                         put_pixel(pixel_x, pixel_y, color);
@@ -299,12 +292,11 @@ void put_char(char c, uint32_t x, uint32_t y, uint32_t color)
     for (uint32_t _y = 0; _y < FONT_H; _y++)
     {
         uint8_t bits = glyph[_y];
-        // 反转位顺序，确保最高位对应最左侧像素
         bits = reverse_bits(bits);
-        
+
         for (uint32_t _x = 0; _x < FONT_W; _x++)
         {
-            if (bits & (1 << (7 - _x)))  // 现在最高位对应最左侧像素
+            if (bits & (1 << (7 - _x)))
             {
                 put_pixel(x + _x, y + _y, color);
             }
@@ -312,16 +304,13 @@ void put_char(char c, uint32_t x, uint32_t y, uint32_t color)
     }
 }
 
-// 输出字符串函数
 void print_string(const char *str, uint32_t x, uint32_t y, uint32_t color)
 {
     print_mixed_string(str, x, y, color);
 }
 
-// 字库中字符数量
 #define CHINESE_FONT_SIZE (sizeof(chinese_font_basic) / sizeof(chinese_glyph_t))
 
-// 查找字库中的字符
 const chinese_glyph_t* find_chinese_glyph(uint16_t unicode)
 {
     for (uint32_t i = 0; i < CHINESE_FONT_SIZE; i++)
@@ -334,25 +323,22 @@ const chinese_glyph_t* find_chinese_glyph(uint16_t unicode)
     return NULL;
 }
 
-// 显示单个中文字符
 void put_chinese_char(uint16_t unicode, uint32_t x, uint32_t y, uint32_t color)
 {
     if (!g_framebuffer)
         return;
-        
+
     const chinese_glyph_t* glyph = find_chinese_glyph(unicode);
     if (!glyph)
     {
-        // 如果找不到字符，显示方框
         for (uint32_t _y = 0; _y < CHINESE_FONT_H; _y++)
         {
             for (uint32_t _x = 0; _x < CHINESE_FONT_W; _x++)
             {
                 uint32_t pixel_x = x + _x;
                 uint32_t pixel_y = y + _y;
-                
-                // 绘制边框
-                if (_x == 0 || _x == CHINESE_FONT_W - 1 || 
+
+                if (_x == 0 || _x == CHINESE_FONT_W - 1 ||
                     _y == 0 || _y == CHINESE_FONT_H - 1)
                 {
                     put_pixel(pixel_x, pixel_y, color);
@@ -361,13 +347,12 @@ void put_chinese_char(uint16_t unicode, uint32_t x, uint32_t y, uint32_t color)
         }
         return;
     }
-    
-    // 绘制字形位图
+
     for (uint32_t _y = 0; _y < CHINESE_FONT_H; _y++)
     {
         uint8_t byte_low = glyph->bitmap[_y * 2];
         uint8_t byte_high = glyph->bitmap[_y * 2 + 1];
-        
+
         for (uint32_t _x = 0; _x < 16; _x++)
         {
             uint8_t bit;
@@ -375,7 +360,7 @@ void put_chinese_char(uint16_t unicode, uint32_t x, uint32_t y, uint32_t color)
                 bit = (byte_low >> (7 - _x)) & 1;
             else
                 bit = (byte_high >> (15 - _x)) & 1;
-                
+
             if (bit)
             {
                 put_pixel(x + _x, y + _y, color);
@@ -384,83 +369,73 @@ void put_chinese_char(uint16_t unicode, uint32_t x, uint32_t y, uint32_t color)
     }
 }
 
-// 显示Unicode字符串
 void print_chinese_string(const uint16_t *unicode_str, uint32_t x, uint32_t y, uint32_t color)
 {
     if (!unicode_str || !g_framebuffer)
         return;
-    
+
     uint32_t current_x = x;
     uint32_t current_y = y;
-    
+
     while (*unicode_str)
     {
         put_chinese_char(*unicode_str, current_x, current_y, color);
-        current_x += CHINESE_FONT_W + 1;  // 字符宽度 + 1像素间距
+        current_x += CHINESE_FONT_W + 1;
         unicode_str++;
     }
 }
 
-// UTF-8到Unicode的简化转换（仅处理2-3字节UTF-8）
 static uint16_t utf8_to_unicode(const char *utf8, uint32_t *advance)
 {
     if ((*utf8 & 0x80) == 0)
     {
-        // 1字节ASCII字符
         *advance = 1;
         return (uint16_t)(*utf8);
     }
     else if ((*utf8 & 0xE0) == 0xC0 && (utf8[1] & 0xC0) == 0x80)
     {
-        // 2字节字符
         *advance = 2;
         return (uint16_t)(((*utf8 & 0x1F) << 6) | (utf8[1] & 0x3F));
     }
     else if ((*utf8 & 0xF0) == 0xE0 && (utf8[1] & 0xC0) == 0x80 && (utf8[2] & 0xC0) == 0x80)
     {
-        // 3字节字符
         *advance = 3;
-        return (uint16_t)(((*utf8 & 0x0F) << 12) | 
-                         ((utf8[1] & 0x3F) << 6) | 
+        return (uint16_t)(((*utf8 & 0x0F) << 12) |
+                         ((utf8[1] & 0x3F) << 6) |
                          (utf8[2] & 0x3F));
     }
     else
     {
-        // 无效UTF-8，使用替代字符
         *advance = 1;
         return 0xFFFD;
     }
 }
 
-// 显示UTF-8字符串
 void print_utf8_string(const char *utf8_str, uint32_t x, uint32_t y, uint32_t color)
 {
     if (!utf8_str || !g_framebuffer)
         return;
-    
+
     uint32_t current_x = x;
     uint32_t current_y = y;
-    
+
     while (*utf8_str)
     {
         uint32_t advance;
         uint16_t unicode = utf8_to_unicode(utf8_str, &advance);
-        
+
         if (unicode < 128)
         {
-            // ASCII字符，使用原有字体
             put_char((char)unicode, current_x, current_y, color);
             current_x += FONT_W + 1;
         }
         else
         {
-            // 中文字符
             put_chinese_char(unicode, current_x, current_y, color);
             current_x += CHINESE_FONT_W + 1;
         }
-        
+
         utf8_str += advance;
     }
 }
 
-// 混合显示：ASCII + 中文

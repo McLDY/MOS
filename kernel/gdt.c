@@ -40,9 +40,9 @@ void gdt_init() {
     gdtr.limit = (sizeof(struct gdt_entry) * 3) - 1;
     gdtr.base  = (uint64_t)&gdt;
 
-    gdt_set_gate(0, 0, 0, 0, 0);                // Null
-    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xA0); // Kernel Code: 64-bit, Ring 0
-    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0x00); // Kernel Data
+    gdt_set_gate(0, 0, 0, 0, 0);
+    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xA0);
+    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0x00);
 
     asm volatile(
         "lgdt %0\n\t"

@@ -6,4 +6,4 @@
 #include "efi.h"
 #include "cstd.h"
 
-#endif // BOOTLOADER_H
+#endif

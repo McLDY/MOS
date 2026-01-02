@@ -1,10 +1,8 @@
-// ide.h - 添加必要的定义
 #ifndef IDE_H
 #define IDE_H
 
 #include <stdint.h>
 
-// IDE端口定义（主通道）
 #define IDE_DATA        0x1F0
 #define IDE_ERROR       0x1F1
 #define IDE_FEATURES    0x1F1
@@ -18,26 +16,22 @@
 #define IDE_ALT_STATUS  0x3F6
 #define IDE_DEV_CTRL    0x3F6
 
-// 状态寄存器位
-#define IDE_STATUS_ERR  0x01    // 错误
-#define IDE_STATUS_DRQ  0x08    // 数据请求就绪
-#define IDE_STATUS_SRV  0x10    // 服务请求
-#define IDE_STATUS_DF   0x20    // 驱动器故障
-#define IDE_STATUS_RDY  0x40    // 驱动器就绪
-#define IDE_STATUS_BSY  0x80    // 忙
+#define IDE_STATUS_ERR  0x01
+#define IDE_STATUS_DRQ  0x08
+#define IDE_STATUS_SRV  0x10
+#define IDE_STATUS_DF   0x20
+#define IDE_STATUS_RDY  0x40
+#define IDE_STATUS_BSY  0x80
 
-// 命令
-#define IDE_CMD_READ    0x20    // 读扇区
-#define IDE_CMD_WRITE   0x30    // 写扇区
-#define IDE_CMD_IDENT   0xEC    // 识别设备
-#define IDE_CMD_FLUSH   0xE7    // 刷新缓存
+#define IDE_CMD_READ    0x20
+#define IDE_CMD_WRITE   0x30
+#define IDE_CMD_IDENT   0xEC
+#define IDE_CMD_FLUSH   0xE7
 
-// 设备选择
-#define IDE_MASTER      0xE0    // 主设备
-#define IDE_SLAVE       0xF0    // 从设备
-#define IDE_LBA_MODE    0x40    // LBA模式
+#define IDE_MASTER      0xE0
+#define IDE_SLAVE       0xF0
+#define IDE_LBA_MODE    0x40
 
-//默认设备
 #define defult_device   0xF0
 
 void ide_init(void);
